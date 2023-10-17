@@ -1,0 +1,78 @@
+!
+interface Loopback0
+ ip address 44.44.44.44 255.255.255.255
+!
+interface Loopback1
+ ip address 192.168.40.1 255.255.255.0
+!
+interface GigabitEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to ConB-1
+ ip address 202.6.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to ConA-2
+ ip address 202.2.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description LINK to Edge-B
+ ip address 202.1.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 100
+ network 44.44.44.44 0.0.0.0
+ network 202.2.0.0 0.0.0.3
+ network 202.6.0.0 0.0.0.3
+!
+router bgp 65100
+ bgp router-id 44.44.44.44
+ bgp log-neighbor-changes
+ bgp confederation identifier 150
+ bgp confederation peers 65200
+ network 192.168.40.0
+ neighbor 45.45.45.45 remote-as 65100
+ neighbor 45.45.45.45 update-source Loopback0
+ neighbor 45.45.45.45 next-hop-self
+ neighbor 55.55.55.55 remote-as 65200
+ neighbor 55.55.55.55 disable-connected-check
+ neighbor 55.55.55.55 update-source Loopback0
+ neighbor 55.55.55.55 next-hop-self
+ neighbor 55.55.55.55 weight 100
+ neighbor 202.1.0.2 remote-as 300
+ neighbor 202.1.0.2 weight 200
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!

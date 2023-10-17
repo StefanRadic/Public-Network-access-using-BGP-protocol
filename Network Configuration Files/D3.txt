@@ -1,0 +1,80 @@
+!
+interface Loopback0
+ ip address 180.100.100.100 255.255.255.255
+!
+interface Loopback1
+ ip address 10.10.154.209 255.255.255.240
+!
+interface Loopback2
+ ip address 10.10.189.1 255.255.255.240
+!
+interface Loopback3
+ ip address 10.10.198.1 255.255.255.0
+!
+interface GigabitEthernet0/0
+ description LINK to D2
+ ip address 10.10.13.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to D1
+ ip address 10.10.11.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to OfficeB-2
+ ip address 10.10.14.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ network 10.10.11.0 0.0.0.3 area 0
+ network 10.10.13.0 0.0.0.3 area 0
+ network 180.100.100.100 0.0.0.0 area 0
+!
+router bgp 64530
+ bgp log-neighbor-changes
+ network 10.10.154.208 mask 255.255.255.240
+ network 10.10.189.0 mask 255.255.255.240
+ network 10.10.198.0 mask 255.255.255.0
+ redistribute static
+ neighbor 1.2.3.4 remote-as 64530
+ neighbor 1.2.3.4 update-source Loopback0
+ neighbor 1.2.3.4 next-hop-self
+ neighbor 180.110.100.100 remote-as 64530
+ neighbor 180.110.100.100 update-source Loopback0
+ neighbor 180.110.100.100 next-hop-self
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 10.255.255.0 255.255.255.192 10.10.14.2 100
+!

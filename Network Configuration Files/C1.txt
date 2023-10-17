@@ -1,0 +1,78 @@
+!
+interface Loopback0
+ ip address 66.66.66.66 255.255.255.255
+!
+interface Loopback1
+ ip address 172.19.0.1 255.255.0.0
+!
+interface Loopback2
+ ip address 172.30.0.1 255.255.252.0
+!
+interface GigabitEthernet0/0
+ description LINK to Edge-B
+ ip address 170.255.255.254 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to C2
+ ip address 25.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to ConB-1
+ ip address 202.5.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 1
+ network 25.0.0.0 0.0.0.3
+ network 66.66.66.66 0.0.0.0
+ eigrp router-id 1.1.1.1
+!
+router bgp 100
+ bgp router-id 66.66.66.66
+ bgp log-neighbor-changes
+ network 172.19.0.0
+ network 172.30.0.0 mask 255.255.252.0
+ neighbor 77.77.77.77 remote-as 100
+ neighbor 77.77.77.77 update-source Loopback0
+ neighbor 77.77.77.77 next-hop-self
+ neighbor 88.88.88.88 remote-as 100
+ neighbor 88.88.88.88 update-source Loopback0
+ neighbor 88.88.88.88 next-hop-self
+ neighbor 170.255.255.253 remote-as 300
+ neighbor 202.5.0.2 remote-as 150
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!

@@ -1,0 +1,95 @@
+!
+interface Loopback0
+ ip address 77.77.77.77 255.255.255.255
+!
+interface Loopback1
+ ip address 172.20.0.1 255.255.224.0
+!
+interface Loopback2
+ ip address 172.31.192.1 255.255.224.0
+!
+interface Loopback3
+ ip address 172.31.255.249 255.255.255.248
+!
+interface GigabitEthernet0/0
+ description LINK to C3
+ ip address 22.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to C1
+ ip address 25.0.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to Stub-Area
+ ip address 171.255.255.254 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 1
+ network 22.0.0.0 0.0.0.3
+ network 25.0.0.0 0.0.0.3
+ network 77.77.77.77 0.0.0.0
+ eigrp router-id 2.2.2.2
+!
+!
+router eigrp 200
+ network 171.255.255.252 0.0.0.3
+!
+router bgp 100
+ bgp router-id 77.77.77.77
+ bgp log-neighbor-changes
+ network 172.20.0.0 mask 255.255.224.0
+ network 172.31.192.0 mask 255.255.224.0
+ network 172.31.255.248 mask 255.255.255.248
+ redistribute eigrp 200 metric 100 route-map EIGRP_FILTER
+ neighbor 66.66.66.66 remote-as 100
+ neighbor 66.66.66.66 update-source Loopback0
+ neighbor 66.66.66.66 next-hop-self
+ neighbor 88.88.88.88 remote-as 100
+ neighbor 88.88.88.88 update-source Loopback0
+ neighbor 88.88.88.88 next-hop-self
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended EIGRP_REDISTRIBUTE
+ permit ip 172.24.49.0 0.0.0.255 any
+ permit ip 172.24.50.0 0.0.0.255 any
+ deny   ip any any
+!
+!
+route-map EIGRP_FILTER permit 10
+ match ip address EIGRP_REDISTRIBUTE
+!

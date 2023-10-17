@@ -1,0 +1,112 @@
+!
+interface Loopback0
+ ip address 88.88.88.88 255.255.255.255
+!
+interface Loopback1
+ ip address 176.28.0.1 255.255.0.0
+!
+interface Loopback2
+ ip address 172.16.0.1 255.255.0.0
+!
+interface Loopback3
+ ip address 172.18.0.1 255.255.0.0
+!
+interface GigabitEthernet0/0
+ description LINK to C2
+ ip address 22.0.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to LAN D
+ ip address 192.168.3.1 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to Edge-A
+ ip address 180.120.120.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description LINK to D1
+ ip address 150.224.224.197 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 1
+ network 22.0.0.0 0.0.0.3
+ network 88.88.88.88 0.0.0.0
+ eigrp router-id 3.3.3.3
+!
+router bgp 100
+ bgp router-id 88.88.88.88
+ bgp log-neighbor-changes
+ network 172.16.0.0
+ network 172.18.0.0
+ network 176.28.0.0
+ network 192.168.3.0
+ neighbor 66.66.66.66 remote-as 100
+ neighbor 66.66.66.66 update-source Loopback0
+ neighbor 66.66.66.66 next-hop-self
+ neighbor 77.77.77.77 remote-as 100
+ neighbor 77.77.77.77 update-source Loopback0
+ neighbor 77.77.77.77 next-hop-self
+ neighbor 150.224.224.198 remote-as 64530
+ neighbor 150.224.224.198 route-map D1_FILTER_2 in
+ neighbor 180.120.120.2 remote-as 200
+ neighbor 180.120.120.2 route-map setLocalIn in
+!
+ip forward-protocol nd
+!
+ip as-path access-list 1 permit ^64530$
+ip as-path access-list 7 permit _200_
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended YES
+ permit ip 10.255.255.0 0.0.0.63 any
+ permit ip 192.168.100.0 0.0.0.255 any
+ permit ip 192.168.150.0 0.0.0.255 any
+ permit ip 10.0.0.0 0.31.255.255 any
+ deny   ip any any
+!
+!
+route-map setLocalIn permit 10
+ match as-path 7
+ set local-preference 200
+!
+route-map setLocalIn permit 20
+ set local-preference 100
+!
+route-map D1_FILTER_2 permit 10
+ match ip address YES
+ match as-path 1
+ set local-preference 300
+ set community none
+!
+route-map ALLOW permit 10
+ match ip address YES
+ set community none
+!

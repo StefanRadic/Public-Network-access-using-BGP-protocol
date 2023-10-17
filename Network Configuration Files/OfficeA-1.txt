@@ -1,0 +1,70 @@
+!
+interface GigabitEthernet0/0
+ description LINK to D2
+ ip address 10.10.100.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to LAN A - LAN B
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.99
+ encapsulation dot1Q 99 native
+ ip address 192.168.99.1 255.255.255.0
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 192.168.100.1 255.255.255.0
+!
+interface GigabitEthernet0/1.150
+ encapsulation dot1Q 150
+ ip address 192.168.150.1 255.255.255.0
+!
+interface GigabitEthernet0/2
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 100
+ area 1 stub
+ network 10.10.100.0 0.0.0.3 area 1
+ network 192.168.99.0 0.0.0.255 area 1
+ network 192.168.100.0 0.0.0.255 area 1
+ network 192.168.150.0 0.0.0.255 area 1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 0.0.0.0 0.0.0.0 10.10.100.2
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0
+!

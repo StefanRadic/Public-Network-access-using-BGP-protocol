@@ -1,0 +1,71 @@
+!
+interface GigabitEthernet0/0
+ description LINK to LAN E - LAN F
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 172.24.50.1 255.255.255.0
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 172.24.49.1 255.255.255.0
+!
+interface GigabitEthernet0/0.50
+ encapsulation dot1Q 50 native
+ ip address 172.24.51.1 255.255.255.0
+!
+interface GigabitEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to C2
+ ip address 171.255.255.253 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 200
+ network 171.255.255.252 0.0.0.3
+ network 172.24.49.0 0.0.0.255
+ network 172.24.50.0 0.0.0.255
+ network 172.24.51.0 0.0.0.255
+ eigrp router-id 1.1.1.1
+ eigrp stub connected
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 0.0.0.0 0.0.0.0 171.255.255.254
+!

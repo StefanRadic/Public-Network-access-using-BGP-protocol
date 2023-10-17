@@ -1,0 +1,83 @@
+!
+interface Loopback0
+ ip address 180.110.100.100 255.255.255.255
+!
+interface Loopback1
+ ip address 10.16.0.1 255.240.0.0
+!
+interface GigabitEthernet0/0
+ description LINK to D1
+ ip address 10.10.12.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to D3
+ ip address 10.10.13.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to OfficeA-1
+ ip address 10.10.100.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 100
+ area 1 stub
+ network 10.10.100.0 0.0.0.3 area 1
+!
+router ospf 1
+ network 10.10.0.0 0.0.255.255 area 0
+ network 180.110.100.100 0.0.0.0 area 0
+!
+router bgp 64530
+ bgp log-neighbor-changes
+ network 10.16.0.0 mask 255.240.0.0
+ redistribute ospf 100 route-map OSPF_FILTER
+ neighbor 1.2.3.4 remote-as 64530
+ neighbor 1.2.3.4 update-source Loopback0
+ neighbor 1.2.3.4 next-hop-self
+ neighbor 180.100.100.100 remote-as 64530
+ neighbor 180.100.100.100 update-source Loopback0
+ neighbor 180.100.100.100 next-hop-self
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended OSPF_REDISTRIBUTE
+ permit ip 192.168.150.0 0.0.0.255 any
+ permit ip 192.168.100.0 0.0.0.255 any
+ deny   ip any any
+!
+!
+route-map OSPF_FILTER permit 10
+ match ip address OSPF_REDISTRIBUTE
+!

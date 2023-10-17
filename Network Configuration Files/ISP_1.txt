@@ -1,0 +1,70 @@
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+!
+interface Loopback1
+ ip address 17.17.17.1 255.255.255.128
+!
+interface GigabitEthernet0/0
+ description LINK to Edge-A
+ ip address 203.200.200.201 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address 192.168.179.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router bgp 63100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 203.200.200.202 remote-as 200
+ !
+ address-family ipv4
+  network 17.17.17.0 mask 255.255.255.128
+  network 192.168.179.0
+  neighbor 203.200.200.202 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source static 192.168.179.100 89.203.12.47
+!

@@ -1,0 +1,77 @@
+!
+interface Loopback0
+ ip address 56.56.56.56 255.255.255.255
+!
+interface Loopback1
+ ip address 192.168.31.1 255.255.255.0
+!
+interface Loopback2
+ ip address 192.168.32.1 255.255.255.0
+!
+interface GigabitEthernet0/0
+ description LINK to ConB-1
+ ip address 202.4.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to ConA-2
+ ip address 202.3.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 100
+ network 56.56.56.56 0.0.0.0
+ network 202.3.0.0 0.0.0.3
+ network 202.4.0.0 0.0.0.3
+!
+router bgp 65200
+ bgp router-id 56.56.56.56
+ bgp log-neighbor-changes
+ bgp confederation identifier 150
+ bgp confederation peers 65100
+ network 192.168.31.0
+ network 192.168.32.0
+ neighbor 45.45.45.45 remote-as 65100
+ neighbor 45.45.45.45 disable-connected-check
+ neighbor 45.45.45.45 update-source Loopback0
+ neighbor 55.55.55.55 remote-as 65200
+ neighbor 55.55.55.55 update-source Loopback0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!

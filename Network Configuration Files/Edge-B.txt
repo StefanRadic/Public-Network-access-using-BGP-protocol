@@ -1,0 +1,114 @@
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+!
+interface Loopback1
+ ip address 13.13.13.1 255.255.255.128
+!
+interface GigabitEthernet0/0
+ description LINK to C1
+ ip address 170.255.255.253 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description LINK to ISP_2
+ ip address 203.200.200.206 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description LINK to Edge-A
+ ip address 202.0.0.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ description LINK to ConA-1
+ ip address 202.1.0.2 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/5
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router bgp 300
+ bgp router-id 5.5.5.5
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 170.255.255.254 remote-as 100
+ neighbor 202.0.0.2 remote-as 200
+ neighbor 202.1.0.1 remote-as 150
+ neighbor 203.200.200.205 remote-as 62100
+ !
+ address-family ipv4
+  network 13.13.13.0 mask 255.255.255.128
+  aggregate-address 192.168.0.0 255.255.192.0 as-set summary-only
+  aggregate-address 160.0.0.0 224.0.0.0 as-set summary-only
+  redistribute static
+  neighbor 170.255.255.254 activate
+  neighbor 170.255.255.254 unsuppress-map AS_PATH
+  neighbor 202.0.0.2 activate
+  neighbor 202.0.0.2 route-map Edge-A in
+  neighbor 202.0.0.2 unsuppress-map AS_PATH
+  neighbor 202.1.0.1 activate
+  neighbor 202.1.0.1 unsuppress-map AS_PATH
+  neighbor 203.200.200.205 activate
+  neighbor 203.200.200.205 remove-private-as all
+  default-information originate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+ip as-path access-list 49 permit ^200$
+!
+no ip http server
+no ip http secure-server
+ip nat pool public-addrs 198.133.220.5 198.133.220.30 netmask 255.255.255.224
+ip nat inside source list 1 pool public-addrs overload
+ip route 0.0.0.0 0.0.0.0 203.200.200.205 30
+!
+ip access-list extended ALL_IN
+ permit ip any any
+!
+!
+ip prefix-list NO-SUP seq 5 permit 0.0.0.0/0 le 32
+!
+route-map AS_PATH permit 10
+ match ip address prefix-list NO-SUP
+!
+route-map Edge-A permit 10
+ match as-path 49
+ set weight 50000
+!
+route-map Edge-A permit 20
+ match ip address ALL_IN
+!
+!
+access-list 1 permit 192.168.0.0 0.0.255.255
+access-list 1 permit 10.0.0.0 0.31.255.255
+access-list 1 permit 160.0.0.0 31.255.255.255
+!
