@@ -1,6 +1,6 @@
-# Realizacija-pristupa-javnoj-mrezi-koriscenjem-BGP-a
+# Public Network access using BGP protocol
 
-- Konfigurisana mreža pomoću eksternog protokola za rutiranje (BGP).
-- Dodati interni protokoli za rutiranje.
-- DHCP, NAT, i dodatne funkcije vezane za sam BGP protokol rutiranja.
-- Slika mreže se nalazi u Public Network folderu.
+- Configured network via BGP protocol.
+- Added additional internal protocols for routing such as EIGRP / OSPF.
+- DHCP, NAT and additional functions bound to BGP.
+- Public Network picture is located in Public Network folder.
